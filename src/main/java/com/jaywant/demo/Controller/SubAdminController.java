@@ -85,7 +85,7 @@ public class SubAdminController {
       response.put("password", subAdmin.getPassword());
       response.put("registercompanyname", subAdmin.getRegistercompanyname());
       response.put("companylogo", subAdmin.getCompanylogo());
-      response.put("role", subAdmin.getRole());
+      response.put("roll", subAdmin.getRoll());
       response.put("gstno", subAdmin.getGstno());
       response.put("status", subAdmin.getStatus());
       response.put("cinno", subAdmin.getCinno());
@@ -189,7 +189,8 @@ public class SubAdminController {
       @RequestParam(value = "signature", required = false) MultipartFile signature,
       @RequestParam(value = "companylogo", required = false) MultipartFile companylogo,
       @RequestParam(value = "packageType", required = false) String packageType,
-      @RequestParam(value = "customCount", required = false) Integer customCount) {
+      @RequestParam(value = "customCount", required = false) Integer customCount,
+      @RequestParam(value = "emailServerPassword", required = false) String emailServerPassword) {
     Optional<Subadmin> existing = subAdminRepo.findById(id);
     if (!existing.isPresent()) {
       return ResponseEntity
@@ -209,7 +210,7 @@ public class SubAdminController {
           stampImg,
           signature,
           companylogo, latitude, longitude,
-          packageType, customCount);
+          packageType, customCount, emailServerPassword);
       return ResponseEntity.ok(updated);
 
     } catch (RuntimeException ex) {

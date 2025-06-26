@@ -187,12 +187,12 @@ public class Subadmin {
         this.companylogo = companylogo;
     }
 
-    public String getRole() {
+    public String getRoll() {
         return roll;
     }
 
-    public void setRole(String role) {
-        this.roll = role;
+    public void setRoll(String roll) {
+        this.roll = roll;
     }
 
     public String getGstno() {
@@ -252,7 +252,7 @@ public class Subadmin {
     }
 
     public Subadmin(int id, String name, String lastname, String stampImg, String signature, String email,
-            String phoneno, String password, String registercompanyname, String companylogo, String role, String gstno,
+            String phoneno, String password, String registercompanyname, String companylogo, String roll, String gstno,
             String status, String cinno, String companyurl, String address, Double latitude, Double longitude,
             MasterAdmin masterAdmin, List<Employee> employee, List<Certificate> certificates, String packageType,
             Integer packageCount) {
@@ -266,7 +266,7 @@ public class Subadmin {
         this.password = password;
         this.registercompanyname = registercompanyname;
         this.companylogo = companylogo;
-        this.roll = role;
+        this.roll = roll;
         this.gstno = gstno;
         this.status = status;
         this.cinno = cinno;

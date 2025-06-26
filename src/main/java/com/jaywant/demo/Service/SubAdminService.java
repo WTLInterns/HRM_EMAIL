@@ -334,7 +334,7 @@ public class SubAdminService {
       MultipartFile stampImg,
       MultipartFile signature,
       MultipartFile companylogo, Double latitude, Double longitude,
-      String packageType, Integer customCount) {
+      String packageType, Integer customCount , String emailServerPassword) {
 
     Subadmin subAdmin = repo.findById(id)
         .orElseThrow(() -> new RuntimeException("Subadmin not found with ID: " + id));
@@ -350,6 +350,7 @@ public class SubAdminService {
     subAdmin.setAddress(address);
     subAdmin.setLatitude(latitude);
     subAdmin.setLongitude(longitude);
+    subAdmin.setEmailServerPassword(emailServerPassword);
 
     // Package logic (null-safe)
     if (packageType != null && !packageType.trim().isEmpty()) {

@@ -49,6 +49,7 @@ public class MasterAdminService {
     existing.setEmail(updatedAdmin.getEmail());
     existing.setMobileno(updatedAdmin.getMobileno());
     existing.setRoll(updatedAdmin.getRoll());
+    existing.setMasterAdminEmailServerPassword(updatedAdmin.getMasterAdminEmailServerPassword());
 
     if (!updatedAdmin.getPassword().equals(existing.getPassword())) {
       existing.setPassword(updatedAdmin.getPassword());
@@ -105,7 +106,7 @@ public class MasterAdminService {
 
   public Subadmin createSubAdmin(Subadmin subAdmin, Long masterAdminId,
       MultipartFile stampImg, MultipartFile signature, MultipartFile companylogo, String packageType,
-      Integer customCount) {
+      Integer customCount , String emailServerPassword) {
 
     MasterAdmin masterAdmin = masterRepo.findById(masterAdminId)
         .orElseThrow(() -> new RuntimeException("Master Admin not found with ID: " + masterAdminId));

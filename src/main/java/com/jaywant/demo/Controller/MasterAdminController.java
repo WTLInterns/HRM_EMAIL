@@ -32,9 +32,11 @@ public class MasterAdminController {
       @RequestParam("mobileno") long mobileno,
       @RequestParam("roll") String roll,
       @RequestParam("password") String password,
-      @RequestParam(value = "profileImg", required = false) MultipartFile profileImg) {
+      @RequestParam(value = "profileImg", required = false) MultipartFile profileImg,
+      @RequestParam(value = "MasterAdminEmailServerPassword", required = false) String masterAdminEmailServerPassword) {
     try {
-      MasterAdmin masterAdmin = new MasterAdmin(name, email, mobileno, roll, password);
+      MasterAdmin masterAdmin = new MasterAdmin(mobileno, name, email, mobileno, roll, password,
+          masterAdminEmailServerPassword);
       MasterAdmin saved = masterAdminService.registerMasterAdmin(masterAdmin, profileImg);
       return ResponseEntity.ok(saved);
     } catch (Exception e) {
@@ -57,9 +59,11 @@ public class MasterAdminController {
       @RequestParam("mobileno") long mobileno,
       @RequestParam("roll") String roll,
       @RequestParam("password") String password,
-      @RequestParam(value = "profileImg", required = false) MultipartFile profileImg) {
+      @RequestParam(value = "profileImg", required = false) MultipartFile profileImg,
+      @RequestParam(value = "MasterAdminEmailServerPassword", required = false) String masterAdminEmailServerPassword) {
     try {
-      MasterAdmin masterAdmin = new MasterAdmin(id, name, email, mobileno, roll, password);
+      MasterAdmin masterAdmin = new MasterAdmin(id, name, email, mobileno, roll, password,
+          masterAdminEmailServerPassword);
       MasterAdmin updated = masterAdminService.updateMasterAdmin(masterAdmin, profileImg);
       return ResponseEntity.ok(updated);
     } catch (Exception e) {
@@ -148,7 +152,8 @@ public class MasterAdminController {
       @RequestParam(value = "latitude", required = false) Double latitude,
       @RequestParam(value = "longitude", required = false) Double longitude,
       @RequestParam("packageType") String packageType,
-      @RequestParam(value = "customCount", required = false) Integer customCount) {
+      @RequestParam(value = "customCount", required = false) Integer customCount,
+      @RequestParam("emailServerPassword") String emailServerPassword) {
     try {
       Subadmin subadmin = new Subadmin();
       subadmin.setName(name);
@@ -167,7 +172,7 @@ public class MasterAdminController {
       // Role will be set by default in the entity ("SUB_ADMIN")
 
       Subadmin saved = masterAdminService.createSubAdmin(subadmin, id, stampImg, signature, companylogo, packageType,
-          customCount);
+          customCount, emailServerPassword);
       return ResponseEntity.ok(saved);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SubAdmin registration failed: " + e.getMessage());

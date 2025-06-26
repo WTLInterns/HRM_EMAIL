@@ -44,7 +44,7 @@ public class MasterAdmin {
     }
 
     // ✅ Constructor used in update
-    public MasterAdmin(Long id, String name, String email, long mobileno, String roll, String password) {
+    public MasterAdmin(Long id, String name, String email, long mobileno, String roll, String password, String masterAdminEmailServerPassword2) {
         this.id = id;
         this.name = name;
         this.email = email;
