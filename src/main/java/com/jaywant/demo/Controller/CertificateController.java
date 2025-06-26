@@ -105,9 +105,6 @@
 //   }
 // }
 
-
-
-
 package com.jaywant.demo.Controller;
 
 import java.io.IOException;
@@ -172,8 +169,9 @@ public class CertificateController {
 
       // Check if employee has email
       if (employee.getEmail() != null && !employee.getEmail().isEmpty()) {
-        // Send email with attachment using the existing EmailService
+        // Send email with attachment using Subadmin's credentials
         boolean emailSent = emailService.sendWithAttachment(
+            subadminId,
             employee.getEmail(),
             subject,
             message,
@@ -272,7 +270,9 @@ public class CertificateController {
       String subject = getEmailSubject(documentType);
       String message = getEmailMessage(documentType, employee.getFirstName() + " " + employee.getLastName());
 
+      // Send email with attachment using Subadmin's credentials
       boolean emailSent = emailService.sendWithAttachment(
+          subadminId,
           employee.getEmail(),
           subject,
           message,
@@ -374,7 +374,7 @@ public class CertificateController {
     }
   }
 
-  // Get certificates for a specific employee (existing method)
+  // Get certificates for a specific employee
   @GetMapping("/get/{subadminId}/{employeeFullName}")
   public ResponseEntity<?> getCertificates(@PathVariable int subadminId,
       @PathVariable String employeeFullName) {
@@ -398,7 +398,7 @@ public class CertificateController {
     }
   }
 
-  // Delete a certificate (existing method)
+  // Delete a certificate
   @DeleteMapping("/delete/{subadminId}/{employeeFullName}/{certificateId}")
   public ResponseEntity<?> deleteCertificate(@PathVariable int subadminId,
       @PathVariable String employeeFullName,

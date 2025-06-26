@@ -26,6 +26,8 @@ public class SubAdminPasswordResetService {
     String otp = generateOTP();
     otpStorage.put(email, otp); // Store OTP in memory
 
+    // This calls the sendHtmlEmail method that uses Master Admin's email as the
+    // sender
     boolean emailSent = emailService.sendHtmlEmail(otp, "Password Reset OTP", email);
     if (!emailSent) {
       throw new RuntimeException("Failed to send OTP email");

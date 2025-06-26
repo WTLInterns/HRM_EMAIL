@@ -25,6 +25,16 @@ public class MasterAdmin {
     private String profileImg;
     private long mobileno;
 
+    private String MasterAdminEmailServerPassword;
+
+    public String getMasterAdminEmailServerPassword() {
+        return MasterAdminEmailServerPassword;
+    }
+
+    public void setMasterAdminEmailServerPassword(String masterAdminEmailServerPassword) {
+        MasterAdminEmailServerPassword = masterAdminEmailServerPassword;
+    }
+
     @OneToMany(mappedBy = "masterAdmin", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Subadmin> subadmin;

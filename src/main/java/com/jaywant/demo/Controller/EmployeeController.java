@@ -159,32 +159,33 @@ public class EmployeeController {
       @PathVariable String fullName,
 
       // scalar fields
-      @RequestParam String firstName,
-      @RequestParam String lastName,
-      @RequestParam String email,
-      @RequestParam Long phone,
-      @RequestParam String aadharNo,
-      @RequestParam String panCard,
-      @RequestParam String education,
-      @RequestParam String bloodGroup,
-      @RequestParam String jobRole,
-      @RequestParam String gender,
-      @RequestParam String address,
-      @RequestParam String birthDate,
-      @RequestParam String joiningDate,
-      @RequestParam String status,
-      @RequestParam String bankName,
-      @RequestParam String bankAccountNo,
-      @RequestParam String bankIfscCode,
-      @RequestParam String branchName,
-      @RequestParam Long salary,
-      @RequestParam String department,
-      @RequestParam String password,
+      @RequestParam(required = false) String firstName,
+      @RequestParam(required = false) String lastName,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) Long phone,
+      @RequestParam(required = false) String aadharNo,
+      @RequestParam(required = false) String panCard,
+      @RequestParam(required = false) String education,
+      @RequestParam(required = false) String bloodGroup,
+      @RequestParam(required = false) String jobRole,
+      @RequestParam(required = false) String gender,
+      @RequestParam(required = false) String address,
+      @RequestParam(required = false) String birthDate,
+      @RequestParam(required = false) String joiningDate,
+      @RequestParam(required = false) String status,
+      @RequestParam(required = false) String bankName,
+      @RequestParam(required = false) String bankAccountNo,
+      @RequestParam(required = false) String bankIfscCode,
+      @RequestParam(required = false) String branchName,
+      @RequestParam(required = false) Long salary,
+      @RequestParam(required = false) String department,
+      @RequestParam(required = false) String password,
 
       // image parts
       @RequestPart(required = false) MultipartFile empimg,
       @RequestPart(required = false) MultipartFile adharimg,
       @RequestPart(required = false) MultipartFile panimg) {
+
     // 1) find the employee by subadmin + fullName
     Employee existing = employeeRepository.findBySubadminIdAndFullName(subadminId, fullName);
     if (existing == null) {
@@ -646,7 +647,7 @@ public class EmployeeController {
   public ResponseEntity<String> sendLoginDetails(
       @PathVariable int subadminId,
       @PathVariable String fullName) {
-    // 1) find the employee
+    // 1) Find the employee
     Employee emp = employeeRepository.findBySubadminIdAndFullName(subadminId, fullName);
     if (emp == null) {
       return ResponseEntity
@@ -654,15 +655,15 @@ public class EmployeeController {
           .body("No employee named '" + fullName + "' under SubAdmin " + subadminId);
     }
 
-    // 2) send the email
-    boolean sent = employeeEmailService.sendEmployeeCredentials(emp);
+    // 2) Send the email using Subadmin’s credentials
+    boolean sent = employeeEmailService.sendEmployeeCredentials(subadminId, emp);
     if (!sent) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body("Failed to send login details to " + emp.getEmail());
     }
 
-    // 3) success
+    // 3) Success
     return ResponseEntity.ok("Login details sent to " + emp.getEmail());
   }
 
@@ -736,46 +737,35 @@ public class EmployeeController {
     return ResponseEntity.ok(emp);
   }
 
-  /**
-   * 1) Request a password reset OTP.
-   * POST /api/employee/forgot-password/request
-   * Body (application/json): { "email": "user@example.com" }
-   */
-  @PostMapping(value = "/forgot-password/request", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-  public ResponseEntity<String> requestForgotPassword(
-      @RequestBody Map<String, String> body) {
-    String email = body.get("email");
+  @PostMapping(value = "/forgot-password/request", consumes = { MediaType.APPLICATION_JSON_VALUE,
+      MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = MediaType.TEXT_PLAIN_VALUE)
+  public ResponseEntity<String> requestForgotPassword(@RequestParam String email) {
     if (email == null || email.isBlank()) {
       return ResponseEntity
-          .badRequest()
-          .body("Missing field: email");
+          .status(HttpStatus.BAD_REQUEST)
+          .body("Required field: email");
     }
+
     try {
-      passwordResetService.sendResetOTP(email);
+      passwordResetService.sendResetOTP(email); // Triggers OTP email using Subadmin's email
       return ResponseEntity.ok("OTP sent to email: " + email);
     } catch (RuntimeException ex) {
       return ResponseEntity
           .status(HttpStatus.BAD_REQUEST)
-          .body("Failed to send OTP: " + ex.getMessage());
+          .body("Error: " + ex.getMessage());
     }
   }
 
-  /**
-   * 2) Verify the OTP and reset the password in one call.
-   * POST /api/employee/forgot-password/verify
-   * Body (application/json):
-   * { "email":"user@example.com", "otp":"ABC123", "newPassword":"secret" }
-   */
-  @PostMapping(value = "/forgot-password/verify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+  // Endpoint for verifying OTP and resetting password
+  @PostMapping(value = "/forgot-password/verify", consumes = { MediaType.APPLICATION_JSON_VALUE,
+      MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = MediaType.TEXT_PLAIN_VALUE)
   public ResponseEntity<String> verifyOtpAndResetPassword(
-      @RequestBody Map<String, String> body) {
-    String email = body.get("email");
-    String otp = body.get("otp");
-    String newPassword = body.get("newPassword");
-
+      @RequestParam String email,
+      @RequestParam String otp,
+      @RequestParam String newPassword) {
     if (email == null || otp == null || newPassword == null) {
       return ResponseEntity
-          .badRequest()
+          .status(HttpStatus.BAD_REQUEST)
           .body("Required fields: email, otp, newPassword");
     }
 
@@ -794,13 +784,6 @@ public class EmployeeController {
           .body("Error: " + ex.getMessage());
     }
   }
-
-  private ObjectMapper jsonMapper() {
-    return new ObjectMapper()
-        .registerModule(new JavaTimeModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-  }
-
   // ==========================================================
   // Location Tracking Endpoints
   // ==========================================================
@@ -905,12 +888,7 @@ public class EmployeeController {
 
     // 1) Map JSON → Attendance
     Attendance att;
-    try {
-      att = jsonMapper().treeToValue(payload, Attendance.class);
-    } catch (JsonProcessingException e) {
-      return ResponseEntity.badRequest()
-          .body("Invalid Attendance JSON");
-    }
+    att = jsonMapper().treeToValue(payload, Attendance.class);
 
     // 2) Lookup existing or prepare new
     Optional<Attendance> existing = attendanceRepository.findByEmployeeAndDate(employee, att.getDate());

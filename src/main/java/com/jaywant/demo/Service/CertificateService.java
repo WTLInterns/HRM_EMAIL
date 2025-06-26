@@ -95,6 +95,7 @@
 //     certificateRepo.deleteById(certificateId);
 //   }
 // }
+
 package com.jaywant.demo.Service;
 
 import java.io.File;
@@ -252,7 +253,7 @@ public class CertificateService {
         certificate.setRelievingLetterPath(filePath);
         break;
       case "exit":
-        certificate.setExitLetterPath(filePath);
+        certificate.setTerminationLetterPath(filePath);
         break;
       case "termination":
         certificate.setTerminationLetterPath(filePath);

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.jaywant.demo.Entity.Employee;
 import com.jaywant.demo.Entity.MasterAdmin;
 import com.jaywant.demo.Entity.Subadmin;
+import com.jaywant.demo.Exception.ResourceNotFoundException;
 import com.jaywant.demo.Repo.EmployeeRepo;
 import com.jaywant.demo.Repo.SubAdminRepo;
 import com.jaywant.demo.Service.EmailService;
@@ -113,6 +114,13 @@ public class SubAdminController {
           .body("An error occurred during login.");
     }
   }
+
+  // @GetMapping("/get-subadmin/{id}")
+  // public Subadmin getSubAdminStatusById(@PathVariable int id) {
+
+  // return this.subAdminRepo.findByStatusSubadminId(id);
+
+  // }
 
   // Endpoint for updating SubAdmin fields including status and image files.
   // @PutMapping("/update-fields/{id}")
@@ -282,7 +290,7 @@ public class SubAdminController {
   @PostMapping("/forgot-password/request")
   public ResponseEntity<String> requestForgotPassword(@RequestParam String email) {
     try {
-      passwordResetService.sendResetOTP(email);
+      passwordResetService.sendResetOTP(email); // Triggers OTP email using Master Admin's email
       return ResponseEntity.ok("OTP sent to email: " + email);
     } catch (RuntimeException ex) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
@@ -386,29 +394,30 @@ public class SubAdminController {
   @PostMapping(value = "/add-employee/{subadminId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> addEmployee(
       @PathVariable int subadminId,
-      @RequestParam String firstName,
-      @RequestParam String lastName,
-      @RequestParam String email,
-      @RequestParam Long phone,
-      @RequestParam String aadharNo,
-      @RequestParam String panCard,
-      @RequestParam String education,
-      @RequestParam String bloodGroup,
-      @RequestParam String jobRole,
-      @RequestParam String gender,
-      @RequestParam String address,
-      @RequestParam String birthDate,
-      @RequestParam String joiningDate,
-      @RequestParam String status,
-      @RequestParam String bankName,
-      @RequestParam String bankAccountNo,
-      @RequestParam String bankIfscCode,
-      @RequestParam String branchName,
-      @RequestParam Long salary,
+      @RequestParam(required = false) String firstName,
+      @RequestParam(required = false) String lastName,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) Long phone,
+      @RequestParam(required = false) String aadharNo,
+      @RequestParam(required = false) String panCard,
+      @RequestParam(required = false) String education,
+      @RequestParam(required = false) String bloodGroup,
+      @RequestParam(required = false) String jobRole,
+      @RequestParam(required = false) String gender,
+      @RequestParam(required = false) String address,
+      @RequestParam(required = false) String birthDate,
+      @RequestParam(required = false) String joiningDate,
+      @RequestParam(required = false) String status,
+      @RequestParam(required = false) String bankName,
+      @RequestParam(required = false) String bankAccountNo,
+      @RequestParam(required = false) String bankIfscCode,
+      @RequestParam(required = false) String branchName,
+      @RequestParam(required = false) Long salary,
       @RequestPart(required = false) MultipartFile empimg,
       @RequestPart(required = false) MultipartFile adharimg,
       @RequestPart(required = false) MultipartFile panimg,
-      @RequestParam String department) {
+      @RequestParam(required = false) String department) {
+
     try {
       // Check package limit
       Subadmin subadmin = subAdminRepo.findById(subadminId)
@@ -539,5 +548,13 @@ public class SubAdminController {
     packageInfo.put("packageCount", subadmin.getPackageCount());
     return ResponseEntity.ok(packageInfo);
   }
+
+  @GetMapping("/status/{subadminId}")
+  public ResponseEntity<Map<String, String>> getSubadminStatus(@PathVariable Integer subadminId) {
+    Subadmin subadmin = subAdminRepo.findById(subadminId)
+        .orElseThrow(() -> new ResourceNotFoundException("Subadmin not found"));
+    Map<String, String> response = new HashMap<>();
+    response.put("status", subadmin.getStatus());
+    return ResponseEntity.ok(response);
+  }
 }
-      

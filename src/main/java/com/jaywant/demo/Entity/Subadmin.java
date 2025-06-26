@@ -34,7 +34,7 @@ public class Subadmin {
     private String password;
     private String registercompanyname;
     private String companylogo;
-    private String role = "SUB_ADMIN";
+    private String roll = "SUB_ADMIN";
     private String gstno;
     private String status;
     private String cinno;
@@ -45,6 +45,8 @@ public class Subadmin {
     private Double longitude;
     private String packageType; // 15, 30, 40, custom
     private Integer packageCount; // number of employees allowed
+
+    private String emailServerPassword;
 
     // getters & setters
     public Double getLatitude() {
@@ -186,11 +188,11 @@ public class Subadmin {
     }
 
     public String getRole() {
-        return role;
+        return roll;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        this.roll = role;
     }
 
     public String getGstno() {
@@ -264,7 +266,7 @@ public class Subadmin {
         this.password = password;
         this.registercompanyname = registercompanyname;
         this.companylogo = companylogo;
-        this.role = role;
+        this.roll = role;
         this.gstno = gstno;
         this.status = status;
         this.cinno = cinno;
@@ -289,6 +291,14 @@ public class Subadmin {
 
     public void setLeaves(List<LeaveForm> leaves) {
         this.leaves = leaves;
+    }
+
+    public String getEmailServerPassword() {
+        return emailServerPassword;
+    }
+
+    public void setEmailServerPassword(String emailServerPassword) {
+        this.emailServerPassword = emailServerPassword;
     }
 
 }
