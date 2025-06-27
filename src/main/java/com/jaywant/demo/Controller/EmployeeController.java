@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jaywant.demo.DTO.SalaryDTO;
 import com.jaywant.demo.Entity.Attendance;
@@ -888,7 +889,8 @@ public class EmployeeController {
 
     // 1) Map JSON → Attendance
     Attendance att;
-    att = jsonMapper().treeToValue(payload, Attendance.class);
+    att = JsonMapper().treeToValue(payload, Attendance.class);
+  
 
     // 2) Lookup existing or prepare new
     Optional<Attendance> existing = attendanceRepository.findByEmployeeAndDate(employee, att.getDate());
